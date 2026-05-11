@@ -206,14 +206,8 @@ class HermesExecutor:
             logger.info(f"      技能: {', '.join(candidate.skills)}")
 
         # 导出数据
-        json_path = DataExporter.export_json(
-            [c.model_dump() for c in candidates],
-            f"hermes_demo_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        )
-        csv_path = DataExporter.export_csv(
-            [c.model_dump() for c in candidates],
-            f"hermes_demo_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        )
+        json_path = DataExporter.to_json(candidates, "hermes_demo")
+        csv_path = DataExporter.to_csv(candidates, "hermes_demo")
 
         logger.info("")
         logger.info(f"✅ 数据已导出:")

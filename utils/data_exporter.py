@@ -86,16 +86,23 @@ class DataExporter:
         
         output_file = cls._get_output_path(filename, "csv")
         
-        # 扁平化第一条数据获取字段名
-        first_flat = cls._flatten_candidate(candidates[0])
-        fieldnames = list(first_flat.keys())
+        # 先扁平化所有数据，收集所有可能的字段名
+        all_flat = []
+        all_fields = set()
+        
+        for candidate in candidates:
+            flat_data = cls._flatten_candidate(candidate)
+            all_flat.append(flat_data)
+            all_fields.update(flat_data.keys())
+        
+        # 按逻辑顺序排名字段
+        fieldnames = sorted(all_fields)
         
         with open(output_file, 'w', encoding='utf-8-sig', newline='') as f:
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer = csv.DictWriter(f, fieldnames=fieldnames, restval='', extrasaction='ignore')
             writer.writeheader()
             
-            for candidate in candidates:
-                flat_data = cls._flatten_candidate(candidate)
+            for flat_data in all_flat:
                 writer.writerow(flat_data)
         
         log.info(f"已导出 {len(candidates)} 条数据到: {output_file}")
